@@ -46,11 +46,20 @@ Nosso objetivo neste desafio é construir um DAG muito simples que lê os dados 
 ## Instruções:
 
 1. Crie uma task que lê os dados da tabela 'Order' do banco de dados disponível em `data/Northwhind_small.sqlite`. O formato do banco de dados é o [Sqlite3](https://www.sqlitetutorial.net/). Essa task deve escrever um arquivo chamado "output_orders.csv".
-2. Crie uma task que lê os dados da tabela "OrderDetail" do mesmo banco de dados e faz um `JOIN` com o arquivo "output_orders.csv" que você exportou na tarefa anterior. Essa task deve calcular qual a soma da quantidade vendida para com destino ("ShipCity") para o Rio de Janeiro. Você deve exportar essa contagem em arquivo "count.txt" que contenha somente esse valor em formato texto (use a função `str()` para converter número em texto).
+2. Crie uma task que lê os dados da tabela "OrderDetail" do mesmo banco de dados e faz um `JOIN` com o arquivo "output_orders.csv" que você exportou na tarefa anterior. Essa task deve calcular qual a soma da quantidade vendida (*Quantity*) para com destino (*ShipCity*) para o Rio de Janeiro. Você deve exportar essa contagem em arquivo "count.txt" que contenha somente esse valor em formato texto (use a função `str()` para converter número em texto).
 3. Adicione uma variável no Airflow com a `key` "my_email" e no campo "value" adicione seu email @indicium.tech. Exemplo:
 
+<br>
+<br>
 ![](variable.png)
 
+4. Crie uma ordenação de execução das Tasks que deve terminar com a task `export_final_output` conforme o exemplo abaixo
+
+```
+task1 >> task2 >> export_final_output
+```
+
+5. Você deve conseguir rodar o DAG sem erros e gerar o arquivo `final_output.txt` com apenas um texto codificado gerado automaticamente pela task `export_final_output`.
 ## Arquivos para entrega
 
 Você deve nos enviar os seguintes arquivos:
