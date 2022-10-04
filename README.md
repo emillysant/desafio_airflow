@@ -22,18 +22,30 @@ e os dados no hd devem ficar parecido com o segundo esquema:
 /data/csv/2021-01-02/file.format
 ```
 
+## Bem pouco sobre Data Engineering
+
+Existem várias formas de definir o que faz um Engenheiro de Dados, mas dificimente o trabalho de um DE não vai incluir as seguintes funções:
+
+![img](images/plataforma-de-dados.png)
+
+Todas essas etapas(coleta, transformação, agendamento.. ) são areas que sózinhas podem ser assuntos de discussões infinitas. Na conversa de hoje 
+vamos focar na parte de agendamento e execução para começar a resolver o problema citado acima.
+
+![img](images/foco-do-dia.png)
+
+
 ## Possiveis Soluções
 
 A primeira ideia que pode vir a cabeça é usar o crontab do linux. Crontab é bastante util para executar scripts agendados em horários específicos, mas e se 
 
 - precisarmos definir um número grande de dependencias?
-- re-executar o pipeline inteiro?precisarmos 
+- re-executar o pipeline inteiro?
 - ter uma noção de quais etapas do pipeline estão demorando mais?
 - Enviar emails em caso de falha?
 
 Todos esses pontos são ou essencias ou muito importantes em projetos em produção.
 
-Tudo isso poderia ser feito desenvolvendo código próprio junto ao cron, mas já existem algumas plataforma com esse exato objetivo como p Airflow, Prefect e Dagster.
+Tudo isso poderia ser feito desenvolvendo código próprio junto ao cron, mas já existem algumas plataforma com esse exato objetivo como Airflow, Prefect e Dagster.
 
 Airflow é a ferramenta mais utilizada e no momento que escrevo esse tutorial com o maior número de features e integrações com outros sistemas.
 
