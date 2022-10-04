@@ -389,3 +389,49 @@ vamos fazer uma task falhar:
 ```
 
 se olharmos os logs, vamos ver que o airflow tentou enviar um email, mas como não configuramos o servidor SMTP o envio também falhou.
+
+
+## Outros Conceitos Importantes
+
+### Airflow Variables
+
+O Airflow possue o conceito de variaveis que permite configurar via cli ou UI valores utilizados no dag.
+Uma vez criado a variavél, ela pode ser utilizada no formato:
+
+```py
+from airflow.models import Variable
+email_list = Variable.get("email_list")
+
+default_args = {
+    'owner': 'airflow',
+    'depends_on_past': False,
+    'email': email_list,
+    'email_on_failure': True,
+    'email_on_retry': True,
+    'retries': 1,
+    'retry_delay': timedelta(minutes=5),
+}
+```
+
+nesse exemplo conseguimos mudar quem recebe emails de falha sem dificuldade.
+
+Uma desvantagem bastante importante de notar aqui, é que essas variaveis nao ficam versionadas em nenhum lugar
+se alguem alterar uma variavel pelo airflow existe boa chance de ninguem saber que isso aconteceu.
+
+### Airflow Connections
+
+para evitar configurar em diversos pontos conexões com sistemas externos, e evitar espalhar informações como usuários e senhas desses sistemas, o airflow possue o conceito de connections.
+
+Assim como variables essas Connections podem ser criadas por cli ou pela UI
+
+por exemplo para usar o Operator postgres para executar queries:
+
+```py
+get_all_pets = PostgresOperator(
+    task_id="get_northwind_sales",
+    postgres_conn_id="nortwhwind_postgres",
+    sql="SELECT * FROM pet;",
+)
+```
+[Todo] colocar isso no nosso dag com exemplo reallendo do banco northwind
+
