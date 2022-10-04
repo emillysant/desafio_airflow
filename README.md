@@ -2,14 +2,13 @@
 
 ## O Problema
 
-vamos utilizar o mesmo problema do desafio de data engineering do processo seletivo da indicium:
+Vamos utilizar o mesmo problema do desafio de data engineering do processo seletivo da indicium:
 
 https://github.com/techindicium/code-challenge
 
-Básicamente precisamos extrair os dados do banco northwind(banco demo de ecommerce) para hd local primeiro, e depois do hd para um segundo banco de dados
-Também precisamos fazer load de um arquivo com informação de vendas que por algum motivo vem de outro sistema em um arquivo csv. 
+Básicamente precisamos extrair os dados do banco northwind(banco demo de ecommerce) para hd local primeiro, e depois do hd para um segundo banco de dados. Também precisamos fazer load de um arquivo com informação de vendas que por algum motivo vem de outro sistema em um arquivo csv. 
 
-Com esses dados jutnos em um database, gostariamos de saber quanto foi vendido em um dia
+Com esses dados juntos em um database, gostariamos de saber quanto foi vendido em um dia
 
 O pipeline vai ficar algo parecido com o seguinte:
 
@@ -78,7 +77,7 @@ tomar um tempo aqui para ver a interface, as dags, tome um tempo para explorar a
 ## Limpando os Dags de Exemplo
 
 Para tirar os dags de exemplo e começar um dag nosso, podemos apagar os arquivos
-airflow-data/data e airflow-data/admin-password.txt, e editar o arquivo airflow.cfg trocando
+airflow-data/data e airflow-data/admin-password.txt, e editar o arquivo airflow.cfg trocando:
 ```
 load_examples = True
 ```
@@ -87,15 +86,15 @@ para
 load_examples = False
 ```
 
-feito isso, primeiro precisamos configurar o ambiente para dizer onde vão ficar os arquivos de config do airflow, fazemos isso configurando a seguinte variavel de ambiente:
+Feito isso, primeiro precisamos configurar o ambiente para dizer onde vão ficar os arquivos de config do airflow, fazemos isso configurando a seguinte variavel de ambiente:
 
 ```
 export AIRFLOW_HOME=./airflow-data
 ```
 
-dessa forma configuramos o airflow para colocar suas configurações dentro da pasta desse tutorial na pasta /airflow-data
+Dessa forma configuramos o airflow para colocar suas configurações dentro da pasta desse tutorial na pasta /airflow-data
 
-Na sequencia rodamos o comando para resetar o db do airflow e fazer start do airflow local
+Na sequência rodamos o comando para resetar o db do airflow e fazer start do airflow local:
 
 ```
 airflow db reset
@@ -104,13 +103,13 @@ airflow standalone
 
 ## Escrevendo primeiro DAG
 
+O Airflow procura por DAGs na em arquivos .py no diretório:
 
-o Airflow procura por DAGs na em arquivos .py na diretório
 ```
 AIRFLOW_HOME/dags
 ```
 
-no nosso caso AIRFLOW_HOME é airflow-data, entao criaremos uma pasta dags e um arquivo
+Em nosso caso AIRFLOW_HOME é airflow-data, entao criaremos uma pasta dags e um arquivo
 elt_dag.py dentro de airflow-data com o seguinte conteudo:
 
 ```py
@@ -170,6 +169,7 @@ Aqui podemos parar para entender alguns conceitos do airflow.
 
 
 ## Conceito DAG do Airflow
+
 Pegando o trecho da parte de DAG do nosso primeiro dag:
 
 ```py
@@ -206,8 +206,7 @@ Todas as tasks do nosso dag vão ter:
   - vão mandar email em retry e falha para engineering@indicium.tech
   -   ...
 
-E nosso DAG vai chamar NorthwindELT e rodar diariamente na hora 0
-
+E nosso DAG vai chamar NorthwindELT e rodar diariamente na hora 0.
 
 
 ## Conceito Operator do  Airflow
@@ -216,7 +215,7 @@ Da documentação:
 
 *An operator represents a single, ideally idempotent, task. Operators determine what actually executes when your DAG runs.*
 
-quem de fato executa alguma tarefa são os operators e não o código do DAG. O código que vimos na logo acima apenas declara um dag, nada de fato vai ser executado naquele código.
+Ou seja, quem de fato executa alguma tarefa são os operators e não o código do DAG. O código que vimos na logo acima apenas declara um dag, nada de fato vai ser executado naquele código.
 
 Essa distinção é importante porque o Airflow interpreta o código do dag com frequencia bem alta, algumas vezes por minuto(isso é configurável).
 
@@ -288,14 +287,14 @@ Vamos montar esse fluxo, primeiro criamos mais 2 tasks:
     )
 ```
 
-e na sequencia definimos a dependecia:
+E na sequencia definimos a dependência:
 
 ```py
     extract_postgres_task >> load_postgres_data_to_db_task
     extract_postgres_task >> load_csv_data_to_db_task    
 ```
 
-agora podemos ver que as duas tasks novas dependem da primeira task que criamos.
+Agora podemos ver que as duas tasks novas dependem da primeira task que criamos.
 
 Aqui podemos ver que essa dependencia não faz muito sentido, não precisamos da extração do postgres para fazer o load dos dados csv para o banco. 
 
@@ -304,10 +303,10 @@ Podemos simplesmente tirar a dependencia entre elas
 
 ```py
     extract_postgres_task >> load_postgres_data_to_db_task
-    -- extract_postgres_task >> load_csv_data_to_db_task    
+    extract_postgres_task >> load_csv_data_to_db_task    
 ```
 
-Para finalizar a o problema enunciado no inicio, precisariamos fazer uma task para fazer uma query no banco pós os 2 loads terem sido feitos:
+Para finalizar a o problema enunciado no inicio, precisariamos fazer uma task para fazer uma query no banco após os 2 loads terem sido feitos:
 
 ```py
     run_sales_query_task = BashOperator(
@@ -345,17 +344,16 @@ O primeiro ponto deve ter ficado evidente com os passos anteriores.
 
 ### **Re-executar o pipeline inteiro?**
 
-isso podemos is pela interface, clicar no quadrado de cima, e apertar clear.
+Isso podemos fazer pela interface, clicar no quadrado de cima, e apertar clear.
 Tambem podemos usar o cli do terminal do airflow, docs: https://airflow.apache.org/docs/apache-airflow/stable/cli-and-env-variables-ref.html
 
-para nosso caso seria algo:
+Para nosso caso seria algo:
 
 ```
 airflow clear NorthwindELT -s 2022-02-07 -e 2022-02-08
 ```
 
-vamos deixar para voces fazerem o teste e fica o desafio de corrigir o comando.
-quase todas as operações possiveis pela interface também é possível via cli
+Vamos deixar para voces fazerem o teste e fica o desafio de corrigir o comando. É bom lembrar que quase todas as operações possiveis pela interface também é possível via CLI.
 
 
 ### **Ter uma noção de quais etapas do pipeline estão demorando mais?**
@@ -371,10 +369,9 @@ Vamos colocar um sleep na task do postgres para que uma demore mais que o resto:
     )
 ```
 
-agora façamos o clear denovo e depois olhamos a aba gantt
+Agora façamos o clear denovo e depois olhamos a aba gantt
 
-Aqui vai ficar claro que as tasks mesmo sem inter dependencias, não executaram em paralelo.
-Isso acontece porque o airflow tem o conceito de Executors, isso é uma configuração do airflow para definir o modo que ele vai executar as tasks, não vamos entrar em muitos detalhes aqui mas o airflow possue alguns executores, como KubernetesExecutor,SequentialExecutor e LocalExecutor. Na configuração padrão, o modo é o SequentialExecutor que roda apenas uma task por vez.
+Aqui vai ficar claro que as tasks mesmo sem inter dependencias, não executaram em paralelo. Isso acontece porque o airflow tem o conceito de Executors, isso é uma configuração do airflow para definir o modo que ele vai executar as tasks, não vamos entrar em muitos detalhes aqui mas o airflow possue alguns executores, como KubernetesExecutor, SequentialExecutor e LocalExecutor. Na configuração padrão, o modo é o SequentialExecutor que roda apenas uma task por vez.
 
 ### **Enviar emails em caso de falha?**
 
