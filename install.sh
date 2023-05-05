@@ -3,12 +3,13 @@
 export AIRFLOW_HOME=./airflow-data
 
 # Install Airflow using the constraints file
-AIRFLOW_VERSION=2.2.3
+AIRFLOW_VERSION=2.6.0
 PYTHON_VERSION="$(python --version | cut -d " " -f 2 | cut -d "." -f 1-2)"
 # For example: 3.6
-CONSTRAINT_URL="https://raw.githubusercontent.com/apache/airflow/constraints-${AIRFLOW_VERSION}/constraints-${PYTHON_VERSION}.txt"
+CONSTRAINT_URL="https://raw.githubusercontent.com/apache/airflow/constraints-2.6.0/constraints-3.11.txt"
+# For example: https://raw.github
 # For example: https://raw.githubusercontent.com/apache/airflow/constraints-2.2.3/constraints-3.6.txt
-pip install "apache-airflow==${AIRFLOW_VERSION}" --constraint "${CONSTRAINT_URL}"
+pip install "apache-airflow==2.6.0" --constraint "https://raw.githubusercontent.com/apache/airflow/constraints-2.6.0/constraints-3.11.txt"
 
 # The Standalone command will initialise the database, make a user,
 # and start all components for you.
