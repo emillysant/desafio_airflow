@@ -76,15 +76,17 @@ Se as coisas deram certo, no terminal vai aparecer a seguinte mensagem:
 ```
 standalone | 
 standalone | Airflow is ready
-standalone | Login with username: admin  password: sWFbFYrnYFAfYgY3
+standalone | Login with username: admin  password: ******
 standalone | Airflow Standalone is for development purposes only. Do not use this in production!
 standalone |
+
 ```
+A senha de fato é gerada automaticamente pelo Airflow e vai aparecer nos logs, no lugar de "****".
 
 airflow roda na porta 8080, então podemos acessar em 
 http://localhost:8080
 
-tomar um tempo aqui para ver a interface, as dags, tome um tempo para explorar a interface.
+Tome um tempo aqui para ver a interface, as dags, tome um tempo para explorar a interface.
 
 ## Limpando os Dags de Exemplo
 
