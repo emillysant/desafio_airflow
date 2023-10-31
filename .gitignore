@@ -50,3 +50,13 @@ Thumbs.db
 *.mov
 *.wmv
 
+## airflow configuration
+
+webserver_config.py
+airflow-webserver.pid
+airflow.cfg
+airflow.db
+standalone_admin_password.txt
+
+## virtual enviromment
+venv

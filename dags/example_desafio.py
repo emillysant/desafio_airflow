@@ -5,6 +5,8 @@ from airflow.operators.bash import BashOperator
 from airflow.operators.python import PythonOperator
 from airflow import DAG
 from airflow.models import Variable
+import sqlite3
+import pandas as pd
 
 # These args will get passed on to each operator
 # You can override them on a per-task basis during operator initialization
@@ -38,6 +40,24 @@ def export_final_answer():
     return None
 ## Do not change the code above this line-----------------------##
 
+def extract_order_data(**context):
+    conn = sqlite3.connect('./data/Northwind_small.sqlite')
+    order_df = pd.read_sql_query('SELECT * from "Order";', conn)
+    order_df.to_csv(f"data/output_orders{context['ds_nodash']}.csv")
+    conn.close()
+
+def calculate_rio_quantity(**context):
+    conn = sqlite3.connect('./data/Northwind_small.sqlite')
+    orderDetail_df = pd.read_sql_query('SELECT * from "OrderDetail";', conn)
+    order_df = pd.read_csv(f"data/output_orders{context['ds_nodash']}.csv")
+    merge_df = pd.merge(orderDetail_df, order_df, how="inner", left_on="OrderId", right_on="Id")
+    finds_Rio_df = merge_df.query('ShipCity == "Rio de Janeiro"')
+    count = str(finds_Rio_df['Quantity'].count())
+    with open("count.txt", 'w') as f:
+        f.write(count)
+    conn.close()
+    
+
 with DAG(
     'DesafioAirflow',
     default_args=default_args,
@@ -56,3 +76,18 @@ with DAG(
         python_callable=export_final_answer,
         provide_context=True
     )
+
+    extract_order_data_task = PythonOperator (
+        task_id = 'extract_order_data_task',
+        python_callable=extract_order_data,
+        provide_context=True
+    )
+
+    calculate_rio_quantity_task = PythonOperator (
+        task_id = 'calculate_rio_quantity_task',
+        python_callable=calculate_rio_quantity,
+        provide_context=True
+    )
+
+
+extract_order_data_task >> calculate_rio_quantity_task >> export_final_output
