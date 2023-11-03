@@ -52,7 +52,7 @@ def calculate_rio_quantity(**context):
     order_df = pd.read_csv(f"data/output_orders{context['ds_nodash']}.csv")
     merge_df = pd.merge(orderDetail_df, order_df, how="inner", left_on="OrderId", right_on="Id")
     finds_Rio_df = merge_df.query('ShipCity == "Rio de Janeiro"')
-    count = str(finds_Rio_df['Quantity'].count())
+    count = str(finds_Rio_df['Quantity'].sum())
     with open("count.txt", 'w') as f:
         f.write(count)
     conn.close()
